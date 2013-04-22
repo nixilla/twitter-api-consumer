@@ -3,6 +3,7 @@
 namespace Twitter\Test;
 
 use Twitter\Query;
+use Twitter\QueryInterface;
 use Twitter\Result;
 
 class ResultTest extends \PHPUnit_Framework_TestCase
@@ -15,12 +16,17 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($obj->getQuery());
         $this->assertNull($obj->nextQuery());
 
+        $this->assertEquals(array(), $obj->toArray(), 'not empty array');
+
         $this->assertEquals($obj, $obj->setQuery(new Query()), 'Fluent interface problem');
 
-        $this->assertNotNull($obj->getQuery());
-        $this->assertNotNull($obj->nextQuery());
+        $this->assertTrue($obj->getQuery() instanceof QueryInterface, 'Not QueryInterface');
+        $this->assertTrue($obj->nextQuery() instanceof QueryInterface, 'Not QueryInterface');
 
         $obj = new Result(array('data' => array('1'), 'metainfo' => array('next_results' => 'since_id=12321')));
+
+        $this->assertEquals(array('1'), $obj->toArray(), 'arrays not match');
+
         $obj->setQuery(new Query());
 
         $this->assertEquals(1, count($obj), 'Object should not be empty');

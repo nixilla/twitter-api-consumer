@@ -15,8 +15,8 @@ interface ConsumerInterface
     public function prepare($api_method, $http_method = 'GET', array $query_string = array(), $headers = array(), $content = '');
 
     /**
-     * @param QueryInterface $query
+     * @param QueryInterface|null $query
      * @return ResultInterface
      */
-    public function execute(QueryInterface $query);
+    public function execute($query);
 }

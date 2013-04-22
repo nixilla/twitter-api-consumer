@@ -142,7 +142,7 @@ class Consumer implements ConsumerInterface
      * @param array $query_string
      * @param array $headers
      * @param string $content
-     * @return mixed
+     * @return QueryInterface
      */
     public function prepare($api_method, $http_method = 'GET', array $query_string = array(), $headers = array(), $content = '')
     {
@@ -160,11 +160,13 @@ class Consumer implements ConsumerInterface
     }
 
     /**
-     * @param \Twitter\QueryInterface $query
+     * @param \Twitter\QueryInterface|null $query
      * @return \Twitter\ResultInterface
      */
-    public function execute(QueryInterface $query)
+    public function execute($query)
     {
+        if( ! $query instanceof QueryInterface) return false;
+
         $response = $this->client->call(
             $query->getUrl(),
             $query->getHttpMethod(),

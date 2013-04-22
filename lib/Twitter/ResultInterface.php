@@ -19,4 +19,9 @@ interface ResultInterface
      * @return QueryInterface
      */
     public function nextQuery();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }

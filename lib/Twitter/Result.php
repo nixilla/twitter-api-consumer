@@ -20,16 +20,29 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
     private $metainfo = array();
 
     /**
+     * @var int for Interator Interface
+     */
+    private $position = 0;
+
+    /**
      * @param array $data
      */
     public function __construct(array $data)
     {
-        if(isset($data['data']) && isset($data['metainfo']))
+        $this->position = 0;
+
+        if(is_array($data))
         {
-            $this->container = $data['data'];
-            $this->metainfo = $data['metainfo'];
+            if(isset($data['data']) && isset($data['metainfo']))
+            {
+                $this->container = $data['data'];
+                $this->metainfo = $data['metainfo'];
+            }
+            else
+            {
+                $this->container = $data;
+            }
         }
-        else $this->container = $data;
     }
 
     /**
@@ -95,5 +108,13 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
     public function count()
     {
         return count($this->container);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->container;
     }
 }
