@@ -2,7 +2,7 @@
 
 namespace Twitter;
 
-class DefaultConverter implements Converter
+class DefaultConverter implements ConverterInterface
 {
     public function convert($input)
     {

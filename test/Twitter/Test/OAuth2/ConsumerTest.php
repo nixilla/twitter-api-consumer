@@ -5,92 +5,138 @@ namespace Twitter\Test\OAuth2;
 use Buzz\Message\RequestInterface;
 use Twitter\DefaultConverter;
 use Twitter\OAuth2\Consumer;
+use Twitter\Query;
+use Twitter\Result;
 
 class ConsumerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @expectedException Twitter\Exception\TwitterApiException
      */
-    public function testCallException1()
+    public function testPrepareExecuteException1()
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'));
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->at(0))
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'))
+            ));
 
-        $response = $this->getResponse(403, array('errors' => array(array('message' => 'Fake error message', 'code' => '1'))));
+
+        $query = new Query();
+        $query->setHttpMethod('GET');
+        $query->setApiMethod('1.1/search/tweets.json');
+        $query->setHeaders(array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' =>  sprintf('Bearer %s', 'abc1234')
+        ));
+        $query->setQueryString(array('q' => urlencode('@nixilla')));
 
         $client
             ->expects($this->at(1))
             ->method('call')
             ->with(
                 sprintf('%s/1.1/search/tweets.json?%s', Consumer::API_ENDPOINT, http_build_query(array('q' => urlencode('@nixilla')))),
-                RequestInterface::METHOD_GET,
+                'GET',
                 array(
                     'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
                     'Authorization' =>  sprintf('Bearer %s', 'abc1234')
                 ),
                 ''
             )
-            ->will($this->returnValue($response));
+            ->will($this->returnValue(
+                $this->getResponse(403, array('errors' => array(array('message' => 'Fake error message', 'code' => '1'))))
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
 
-        $consumer->call('/1.1/search/tweets.json', RequestInterface::METHOD_GET, array('q' => urlencode('@nixilla')));
+        $q = $consumer->prepare('/1.1/search/tweets.json', 'GET', array('q' => urlencode('@nixilla')));
+
+        $this->assertEquals($query, $q, 'These 2 objects are not the same');
+
+        $consumer->execute($q);
     }
 
-    public function testCall()
+    public function testPrepareExecute()
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'));
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->at(0))
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'))
+            ));
 
-        $response = $this->getResponse(200, array('some value'));
+        $query = new Query();
+        $query->setHttpMethod('GET');
+        $query->setApiMethod('1.1/search/tweets.json');
+        $query->setHeaders(array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' =>  sprintf('Bearer %s', 'abc1234')
+        ));
+        $query->setQueryString(array('q' => urlencode('@nixilla')));
 
         $client
             ->expects($this->at(1))
             ->method('call')
             ->with(
                 sprintf('%s/1.1/search/tweets.json?%s', Consumer::API_ENDPOINT, http_build_query(array('q' => urlencode('@nixilla')))),
-                RequestInterface::METHOD_GET,
+                'GET',
                 array(
                     'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
                     'Authorization' =>  sprintf('Bearer %s', 'abc1234')
                 ),
                 ''
             )
-            ->will($this->returnValue($response));
+            ->will($this->returnValue(
+                $this->getResponse(200, array('some value'))
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
 
-        $consumer->call('/1.1/search/tweets.json', RequestInterface::METHOD_GET, array('q' => urlencode('@nixilla')));
+        $q = $consumer->prepare('/1.1/search/tweets.json', RequestInterface::METHOD_GET, array('q' => urlencode('@nixilla')));
+
+        $this->assertEquals($query, $q, 'These 2 objects are not the same');
+
+        $result = $consumer->execute($q);
+
+        $this->assertTrue($result instanceof Result, '$result is not instance of Twitter\Result');
     }
 
     /**
-     * @expectedException Twitter\Exception\TwitterApiException
+     * @expectedException \Twitter\Exception\TwitterApiException
      */
     public function testObtainBearerTokenException1()
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(403, array('errors' => array(array('message' => 'Fake error message', 'code' => '1'))));
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->once())
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(403, array('errors' => array(array('message' => 'Fake error message', 'code' => '1'))))
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
         $consumer->obtainBearerToken();
@@ -103,32 +149,42 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(403);
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->once())
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(403)
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
         $consumer->obtainBearerToken();
     }
 
     /**
-     * @expectedException Twitter\Exception\InvalidTokenTypeException
+     * @expectedException \Twitter\Exception\InvalidTokenTypeException
      */
     public function testObtainBearerTokenException3()
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(200, array('token_type' => 'random','access_token' => 'abc1234'));
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->once())
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(200, array('token_type' => 'random','access_token' => 'abc1234'))
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
         $consumer->obtainBearerToken();
@@ -138,13 +194,18 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getClient();
 
-        $response = $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'));
+        $headers = array(
+            'User-Agent' => 'Twitter API Consumer (https://github.com/nixilla/twitter-api-consumer)',
+            'Authorization' => sprintf('Basic %s', 'YWFhYTpiYmJi')
+        );
 
         $client
             ->expects($this->once())
-            ->method('call')
-            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), 'POST')
-            ->will($this->returnValue($response));
+            ->method('post')
+            ->with(sprintf('%s/oauth2/token', Consumer::API_ENDPOINT), $headers, 'grant_type=client_credentials')
+            ->will($this->returnValue(
+                $this->getResponse(200, array('token_type' => 'bearer','access_token' => 'abc1234'))
+            ));
 
         $consumer = new Consumer($client, 'aaaa', 'bbbb');
         $this->assertEquals('abc1234', $consumer->obtainBearerToken(), 'Token do not match');
@@ -163,7 +224,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getClient();
         $consumer = new Consumer($client, 'consumer_key', 'consumer_secret');
-        $converter = $this->getMock('Twitter\Converter', array('convert'));
+        $converter = $this->getMock('Twitter\ConverterInterface', array('convert'));
         $consumer->setConverter('/me', $converter);
     }
 
@@ -174,7 +235,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($consumer->getConverter('/me') instanceof DefaultConverter);
 
-        $converter = $this->getMock('Twitter\Converter', array('convert'));
+        $converter = $this->getMock('Twitter\ConverterInterface', array('convert'));
         $consumer->setConverter('/me', $converter);
 
         $this->assertEquals($converter, $consumer->getConverter('/me'));
@@ -185,7 +246,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
     private function getClient()
     {
-        return $this->getMock('Buzz\Browser', array('call', 'get'));
+        return $this->getMock('Buzz\Browser', array('call', 'post'));
     }
 
     private function getResponse($code, $content = null)

@@ -2,7 +2,7 @@
 
 namespace Twitter;
 
-interface Converter
+interface ConverterInterface
 {
     public function convert($input);
 }
