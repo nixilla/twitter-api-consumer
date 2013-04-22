@@ -1,0 +1,7 @@
+.idea
+*.iml
+vendor
+my-example.php
+composer.lock
+build
+bin
