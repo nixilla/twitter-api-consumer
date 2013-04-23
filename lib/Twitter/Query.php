@@ -100,7 +100,7 @@ class Query implements QueryInterface
         else
         {
             $string = preg_match('/^\?/',$query_string) ? substr($query_string, 1) : $query_string;
-            parse_str($string, $this->query_string);
+            parse_str(urldecode($string), $this->query_string);
         }
 
         return $this;

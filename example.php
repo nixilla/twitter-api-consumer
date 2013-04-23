@@ -20,7 +20,7 @@ try {
     $query = $consumer->prepare(
         '/1.1/search/tweets.json',
         'GET',
-        array('q' => urlencode('#twitterapi'), 'count' => 4, 'include_entities' => 1)
+        array('q' => '#twitterapi', 'count' => 4, 'include_entities' => 1)
     );
 
     $result = $consumer->execute($query);
@@ -33,7 +33,7 @@ try {
         foreach($result as $key => $tweet)
             echo $tweet['text'] . "\n";
     }
-    while($consumer->execute($result->nextQuery()) && $api_calls++);
+    while(($result = $consumer->execute($result->nextQuery())) && $api_calls++);
 }
 catch (Exception $e)
 {

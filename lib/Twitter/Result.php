@@ -66,7 +66,10 @@ class Result implements ResultInterface, \ArrayAccess, \Countable, \Iterator
     public function nextQuery()
     {
         if(isset($this->metainfo['next_results']))
-            return $this->query->setQueryString($this->metainfo['next_results']);
+        {
+            $this->query->setQueryString($this->metainfo['next_results']);
+            return $this->query;
+        }
         else
             return false;
     }
