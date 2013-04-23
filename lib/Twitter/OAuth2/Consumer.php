@@ -2,7 +2,6 @@
 
 namespace Twitter\OAuth2;
 
-use Buzz\Message\RequestInterface;
 use Buzz\Message\Response;
 use Twitter\ConsumerInterface;
 use Twitter\ConverterInterface;

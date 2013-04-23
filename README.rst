@@ -3,7 +3,10 @@ Twitter API Consumer
 
 Currently supports OAuth2 application authentication only.
 
-.. image:: https://travis-ci.org/nixilla/twitter-api-consumer.png?branch=master
+I recommend you try |Travis|_.
+
+.. |Travis| image:: https://travis-ci.org/nixilla/twitter-api-consumer.png?branch=master
+.. _Travis: https://travis-ci.org/nixilla/twitter-api-consumer
 
 Installation and Tests
 ======================
