@@ -2,7 +2,7 @@
 
 namespace Twitter;
 
-class Result implements ResultInterface, \ArrayAccess, \Countable
+class Result implements ResultInterface, \ArrayAccess, \Countable, \Iterator
 {
     /**
      * @var \Twitter\QueryInterface
@@ -20,17 +20,10 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
     private $metainfo = array();
 
     /**
-     * @var int for Interator Interface
-     */
-    private $position = 0;
-
-    /**
      * @param array $data
      */
-    public function __construct(array $data)
+    public function __construct(array $data, QueryInterface $query)
     {
-        $this->position = 0;
-
         if(is_array($data))
         {
             if(isset($data['data']) && isset($data['metainfo']))
@@ -42,7 +35,10 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
             {
                 $this->container = $data;
             }
+            $this->rewind();
         }
+
+        $this->query = $query;
     }
 
     /**
@@ -72,7 +68,7 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
         if(isset($this->metainfo['next_results']))
             return $this->query->setQueryString($this->metainfo['next_results']);
         else
-            return $this->query;
+            return false;
     }
 
     /**
@@ -116,5 +112,42 @@ class Result implements ResultInterface, \ArrayAccess, \Countable
     public function toArray()
     {
         return $this->container;
+    }
+
+    /**
+     * Iterator methods
+     */
+
+    public function current()
+    {
+        return current($this->container);
+    }
+
+    public function next()
+    {
+        return next($this->container);
+    }
+
+    public function key()
+    {
+        return key($this->container);
+    }
+
+    public function valid()
+    {
+        return ($this->current() !== false);
+    }
+
+    public function rewind()
+    {
+        return reset($this->container);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetainfo()
+    {
+        return $this->metainfo;
     }
 }

@@ -178,7 +178,7 @@ class Consumer implements ConsumerInterface
         {
             $converter = $this->getConverter($query->getApiMethod());
             $result = $converter->convert($response->getContent());
-            return new Result($result);
+            return new Result($result, $query);
         }
         else return $this->handleException($response);
     }
