@@ -1,7 +1,7 @@
 <?php
 
 // make sure that you run `composer install` before executing this script
-// run it with php ./example.php
+// run it with php ./oauth2_test_script.php
 
 require_once './vendor/autoload.php';
 
@@ -30,8 +30,11 @@ try {
     {
         printf("Queried %s times, last time found %s tweets\n", $api_calls, count($result));
 
-        foreach($result as $key => $tweet)
-            echo $tweet['text'] . "\n";
+        $metainfo = $result->getMetainfo();
+
+        echo $metainfo['next_results']. "\n";
+
+        if($api_calls > 4) break;
     }
     while($consumer->execute($result->nextQuery()) && $api_calls++);
 }
