@@ -36,7 +36,8 @@ If you're using Symfony2 and Dependecy Injection you can even do this is 3 lines
     $query = $consumer->prepare('/1.1/search/tweets.json','GET', array('q' => '#twitterapi'));
     $result = $consumer->execute($query);
 
-By default the $result variable contains array with the structure equivalent to json response from the Twitter API.
+By default the $result variable contains Result object implementing ArrayAccess, Countable, Iterator interfaces,
+with the structure equivalent to json response from the Twitter API. It gets it from DefaultConverter class.
 However you can change it, by using converters. Converter is the special class that implements ConverterInterface
 with just one method "convert". It gets raw input as a parameter, which by default is json string.
 
