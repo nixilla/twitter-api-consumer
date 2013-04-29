@@ -1,12 +1,14 @@
 Twitter API Consumer
 ====================
 
-This is the small library to make calls to Twitter API. It uses `kriswallsmith/buzz` for HTTP.
+This is the small library to make calls to Twitter API. It uses `kriswallsmith/buzz`_ for HTTP.
 
-Twitter API supports OAuth 1a as well as OAuth2 but for 'application-only authentication'_.
+.. _kriswallsmith/buzz: https://github.com/kriswallsmith/Buzz
+
+Twitter API supports OAuth 1a as well as OAuth2 but for `application-only authentication`_.
 This library currently supports OAuth2, but there are plans for OAuth1a too.
 
-.. _'application-only authentication': https://dev.twitter.com/docs/auth/application-only-auth
+.. _`application-only authentication`: https://dev.twitter.com/docs/auth/application-only-auth
 
 The concept for this library is to use Twitter API with as small as 4 lines of code
 
