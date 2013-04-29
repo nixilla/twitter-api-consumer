@@ -31,6 +31,36 @@ If you're using Symfony2 and Dependecy Injection you can even do this is 3 lines
     $query = $consumer->prepare('/1.1/search/tweets.json','GET', array('q' => '#twitterapi'));
     $result = $consumer->execute($query);
 
+By default the $result variable contains array with the structure equivalent to json response from the Twitter API.
+However you can change it, by using converters. Converter is the special class that implements ConverterInterface
+with just one method "convert". It gets raw input as a parameter, which by default is json string.
+
+You can inject converter class for given API method into $consumer object like this:
+
+.. code:: php
+
+    <?php
+
+    $consumer->setConverter('/1.1/search/tweets.json', new \Twitter\TwitterSearchConverter());
+
+And converter class is very simple and can look like this:
+
+.. code:: php
+
+    <?php
+
+    class TwitterSearchConverter implements ConverterInterface
+    {
+        public function convert($input)
+        {
+            $result = json_decode($input, true);
+
+            return array('data' => $result['statuses'], 'metainfo' => $result['search_metadata']);
+        }
+    }
+
+Of course you can do more complicated conversion, like creating and persisting database objectes and return for example
+Doctrine ArrayCollection.
 
 |Travis|_
 
