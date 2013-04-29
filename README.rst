@@ -10,7 +10,7 @@ This is the small library to make calls to Twitter API. It uses `kriswallsmith/b
 
 .. _kriswallsmith/buzz: https://github.com/kriswallsmith/Buzz
 
-Twitter API supports OAuth 1a as well as OAuth2 but for `application-only authentication`_.
+Twitter API supports OAuth2 but for `application-only authentication`_.
 This library currently supports OAuth2, but there are plans for OAuth1a too.
 
 .. _`application-only authentication`: https://dev.twitter.com/docs/auth/application-only-auth

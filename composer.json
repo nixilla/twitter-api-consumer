@@ -2,7 +2,7 @@
     "name": "nixilla/twitter-api-consumer",
     "description": "Twitter API consumer in PHP, supports API 1.1 and works with OAuth 1.1 as well as OAuth 2.0",
     "type": "library",
-    "keywords": [ "twitter", "api", "oauth2", "oauth1a" ],
+    "keywords": [ "twitter", "api", "oauth2" ],
     "license": "MIT",
     "authors": [
         {
