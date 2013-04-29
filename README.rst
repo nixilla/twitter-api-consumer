@@ -1,6 +1,11 @@
 Twitter API Consumer
 ====================
 
+|Travis|_
+
+.. |Travis| image:: https://travis-ci.org/nixilla/twitter-api-consumer.png?branch=master
+.. _Travis: https://travis-ci.org/nixilla/twitter-api-consumer
+
 This is the small library to make calls to Twitter API. It uses `kriswallsmith/buzz`_ for HTTP.
 
 .. _kriswallsmith/buzz: https://github.com/kriswallsmith/Buzz
@@ -63,7 +68,8 @@ Of course you can do more complicated conversion, like creating and persisting d
 Doctrine ArrayCollection.
 
 The whole point of converter class is to externalize data conversion from one format to another
-and give you control over it. You can inject converters via DI in Symfony2 like this (this is just example):
+and give you control over it. You can (and you should) inject converters via DI in Symfony2 like this
+(this is just an example):
 
 .. code:: yaml
 
@@ -73,14 +79,22 @@ and give you control over it. You can inject converters via DI in Symfony2 like 
         calls:
             - [ setConverter , ["/1.1/search/tweets.json", "@tweet.converter" ] ]
 
-|Travis|_
+Installation
+============
 
-.. |Travis| image:: https://travis-ci.org/nixilla/twitter-api-consumer.png?branch=master
-.. _Travis: https://travis-ci.org/nixilla/twitter-api-consumer
+Via composer (don't use 0.2 - it's broken).
+
+.. code-block:: json
+
+    {
+        "require": {
+            "nixilla/twitter-api-consumer": "~0.3"
+        }
+    }
 
 
-Installation and Tests
-======================
+Tests
+=====
 
 This is copy/paste command
 
