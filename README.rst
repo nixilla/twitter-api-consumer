@@ -41,7 +41,7 @@ You can inject converter class for given API method into $consumer object like t
 
     <?php
 
-    $consumer->setConverter('/1.1/search/tweets.json', new \Twitter\TwitterSearchConverter());
+    $consumer->setConverter('/1.1/search/tweets.json', new \TwitterSearchConverter());
 
 And converter class is very simple and can look like this:
 
@@ -59,8 +59,19 @@ And converter class is very simple and can look like this:
         }
     }
 
-Of course you can do more complicated conversion, like creating and persisting database objectes and return for example
+Of course you can do more complicated conversion, like creating and persisting database objects and return for example
 Doctrine ArrayCollection.
+
+The whole point of converter class is to externalize data conversion from one format to another
+and give you control over it. You can inject converters via DI in Symfony2 like this (this is just example):
+
+.. code:: yaml
+
+    twitter.consumer:
+        class: %twitter.oauth2.consumer.class%
+        arguments: [ @buzz, %twitter.app_id%, %twitter.secret% ]
+        calls:
+            - [ setConverter , ["/1.1/search/tweets.json", "@tweet.converter" ] ]
 
 |Travis|_
 
