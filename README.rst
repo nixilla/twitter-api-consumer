@@ -79,6 +79,37 @@ and give you control over it. You can (and you should) inject converters via DI 
         calls:
             - [ setConverter , ["/1.1/search/tweets.json", "@tweet.converter" ] ]
 
+
+You can also paginate over the result. All you need to do is to make sure that your converter class returns following key:
+
+.. code:: php
+
+    <?php
+
+    $result = $converter->convert($json_string);
+    assertNotNull($result['metainfo']['next_results']);
+
+The class TwitterSearchConverter above is the example converter which you can use for result pagination. This is how you do it:
+
+.. code:: php
+
+    <?php
+
+    $query = $consumer->prepare('/1.1/search/tweets.json','GET', array('q' => '#twitterapi'));
+    $api_calls = 0;
+
+    $result = $consumer->execute($query);
+    $api_calls++;
+
+    do
+    {
+        printf("Queried %s times, last time found %s tweets\n", $api_calls, count($result));
+
+        foreach($result as $key => $tweet)
+            echo $tweet['text'] . "\n";
+    }
+    while(($result = $consumer->execute($result->nextQuery())) && $api_calls++);
+
 Installation
 ============
 
