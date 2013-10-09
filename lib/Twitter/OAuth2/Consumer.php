@@ -11,7 +11,6 @@ use Twitter\Exception\TwitterApiException;
 use Twitter\Query;
 use Twitter\QueryInterface;
 use Twitter\Result;
-use Twitter\ResultInterface;
 
 class Consumer implements ConsumerInterface
 {
